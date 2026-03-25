@@ -8,7 +8,7 @@
 ## 📖 Table of Contents
 
 - [Overview](#overview)
-- [Phase 1 – Foundation (Completed)](#phase-1--foundation-completed)
+- [Phase 1 – Foundation (Completed)](#phase-1--foundation)
   - [Architecture & Network Segmentation](#architecture--network-segmentation)
   - [VM Components & Resource Constraints](#vm-components--resource-constraints)
   - [Network Zones & IP Assignment](#network-zones--ip-assignment)
@@ -119,6 +119,8 @@ During the build, several typical enterprise‑grade issues were encountered and
 | DNS resolution broken on Ubuntu                   | Set `/etc/resolv.conf` manually and disabled systemd‑resolved.                               |
 | Systemd service timeouts                          | Increased `DefaultTimeoutStartSec=600` in `/etc/systemd/system.conf`.                        |
 
+- [starter bash script](/starter)
+- [netplan config file](/50-cloud-init.yaml)
 
 ---
 
