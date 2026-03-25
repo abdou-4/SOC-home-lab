@@ -49,7 +49,7 @@ IPFire acts as the perimeter firewall, dividing the internal network into four z
 | Zone        | Purpose                                      | Subnet          | IPFire Interface |
 |-------------|----------------------------------------------|-----------------|------------------|
 | **RED**     | WAN / untrusted (attacker)                   | 10.0.2.0/24     | RED              |
-| **GREEN**   | Management zone (monitoring tools & jumpbox) | 192.168.30.0/24 | GREEN            |
+| **GREEN**   | Management zone (monitoring tools) | 192.168.30.0/24 | GREEN            |
 | **BLUE**    | Server zone (victim servers)                 | 192.168.10.0/24 | BLUE             |
 | **ORANGE**  | User zone (end‑user workstations)            | 192.168.20.0/24 | ORANGE           |
 
