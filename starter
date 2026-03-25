@@ -1,0 +1,5 @@
+#!/bin/bash
+[ "$EUID" -eq 0 ] || { echo "Please run as root"; exit 1; }
+modprobe -r kvm_intel 2>/dev/null || echo "Warning: Failed to remove kvm_intel module (might not be loaded)"
+DEVICE=$(blkid -U "7364A3DC68CC6A62") || { echo "Device with UUID 7364A3DC68CC6A62 not found"; exit 1; }
+mount "$DEVICE" /media/soc_lab || { echo "Mount failed"; exit 1; }
