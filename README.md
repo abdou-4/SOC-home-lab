@@ -2,7 +2,6 @@
 
 > A virtual Security Operations Center (SOC) lab that simulates a real‑world enterprise environment.  
 > Built to practice network segmentation, threat detection, alert triage, and incident response using industry‑standard open‑source tools.  
-> **Phase 1** is complete; **Phase 2** is planned and scoped.
 
 ---
 
@@ -15,7 +14,6 @@
   - [Network Zones & IP Assignment](#network-zones--ip-assignment)
   - [VirtualBox Network Configuration](#virtualbox-network-configuration)
   - [Initial Setup & Challenges](#initial-setup--challenges)
-  - [Current State](#current-state)
 - [Phase 2 – Operations (Planned)](#phase-2--operations-planned)
 - [How to Replicate](#how-to-replicate)
 - [Lessons Learned](#lessons-learned)
@@ -40,7 +38,7 @@ The lab is divided into two phases to ensure a solid foundation before adding de
 
 ---
 
-## Phase 1 – Foundation (Completed)
+## Phase 1 – Foundation
 
 ### Architecture & Network Segmentation
 
@@ -67,13 +65,13 @@ Because of limited resources, VMs are not always running simultaneously; a selec
 | **IPFire**               | Firewall / Router                         | 1    | 1        | 10           | –         | (DHCP on RED) |
 | **Security Onion**       | NDR (network monitoring)                  | 4    | 8        | 200          | GREEN     | 192.168.30.2 |
 | **Wazuh OVA**            | EDR / SIEM                                | 4    | 8        | 50           | GREEN     | 192.168.30.3 |
-| **Ubuntu Desktop (GUI)** | Jumpbox / Management workstation          | 2    | 4        | 40           | GREEN     | 192.168.30.4 |
-| **Windows Server 2019**  | Victim server (DC / app server)           | 2    | 4        | 40           | BLUE      | 192.168.10.2 |
+| **Ubuntu Desktop (GUI)** | Management workstation                    | 2    | 4        | 25           | GREEN     | 192.168.30.4 |
+| **Windows Server 2019**  | Victim server (AD)                        | 2    | 2        | 40           | BLUE      | 192.168.10.2 |
 | **Ubuntu Server**        | Victim Linux server                       | 1    | 2        | 25           | BLUE      | 192.168.10.3 |
-| **Windows 10 LTSC**      | End‑user workstation                      | 2    | 4        | 40           | ORANGE    | 192.168.20.2 |
+| **Windows 10 LTSC**      | End‑user workstation                      | 2    | 2        | 40           | ORANGE    | 192.168.20.2 |
 | **Parrot OS**            | Attacker (external)                       | 2    | 4        | 40           | RED       | (DHCP)       |
 
-> **Note:** All internal VMs use static IPs; the management workstation acts as the only way to access monitoring dashboards (no direct internet access for servers).
+> **Note:** All internal VMs use static IPs; the management workstation acts as the only way to access monitoring dashboards (no direct internet access for servers), used RAM could be decrease only after installation 
 
 ### Network Zones & IP Assignment
 
@@ -82,7 +80,7 @@ Because of limited resources, VMs are not always running simultaneously; a selec
 | RED     | `nat-wan` (NAT Network)   | 10.0.2.0/24  | 10.0.2.1         | Parrot OS (attacker)                                                |
 | BLUE    | `zone-server` (Internal)  | 192.168.10.0/24 | 192.168.10.1     | Windows Server, Ubuntu Server (victims)                             |
 | ORANGE  | `zone-user` (Internal)    | 192.168.20.0/24 | 192.168.20.1     | Windows 10 (user)                                                   |
-| GREEN   | `zone-monitoring` (Internal)| 192.168.30.0/24 | 192.168.30.1     | Security Onion (mgmt), Wazuh, Ubuntu Desktop (jumpbox)              |
+| GREEN   | `zone-monitoring` (Internal)| 192.168.30.0/24 | 192.168.30.1     | Security Onion (mgmt), Wazuh, Ubuntu Desktop           |
 
 **Security Onion Monitoring Interface:**  
 In addition to its management interface on GREEN, Security Onion has a **second adapter** attached to `zone-server` (BLUE) with **promiscuous mode** enabled. This allows it to capture all traffic on the server network without an IP address.
@@ -113,22 +111,14 @@ During the build, several typical enterprise‑grade issues were encountered and
 
 | Challenge                                         | Solution                                                                                     |
 |---------------------------------------------------|----------------------------------------------------------------------------------------------|
-| Ubuntu netplan configuration lost after install   | Manually wrote `/etc/netplan/01‑netcfg.yaml` with static IP, gateway, and nameservers.      |
-| BLUE/ORANGE zones had no internet access          | Added explicit firewall rules in IPFire: **Access to Blue** for servers, and a standard rule for ORANGE. |
+| The external HDD change name depending on the I/O port & Virtualbox not lunching VMs due to KVM issue  | Wrote a bash file `/starter` that mount the HDD using the UUID and turn off intel KVM|
+| Ubuntu netplan configuration lost after install in all VMs   | Manually wrote `/etc/netplan/50-cloud-init.yaml` with static IP, gateway, and nameservers.      |
+| BLUE zones had no internet access          | Added all the blue MAC addresses in IPFire: **Access to Blue** |
 | Wazuh manual installation repeatedly failed       | Switched to the official Wazuh OVA (pre‑configured).                                         |
-| Security Onion could not capture traffic          | Enabled promiscuous mode on the monitoring interface in VirtualBox.                          |
-| Parrot OS live environment hung on boot           | Added kernel parameter `nomodeset` during boot.                                              |
+| Parrot OS live environment hung on boot           | remove the ISO file from the VM storage.                                              |
 | DNS resolution broken on Ubuntu                   | Set `/etc/resolv.conf` manually and disabled systemd‑resolved.                               |
 | Systemd service timeouts                          | Increased `DefaultTimeoutStartSec=600` in `/etc/systemd/system.conf`.                        |
 
-### Current State
-
-✅ IPFire routing and enforcing segmentation.  
-✅ Security Onion monitoring network traffic (management IP 192.168.30.2).  
-✅ Wazuh OVA providing endpoint visibility (management IP 192.168.30.3).  
-✅ Ubuntu Desktop (jumpbox) used to access both monitoring dashboards.  
-✅ Windows Server, Ubuntu Server, and Windows 10 all reporting to Wazuh via agents.  
-✅ Attacker (Parrot OS) isolated on the WAN network, ready to simulate external threats.
 
 ---
 
@@ -139,7 +129,7 @@ The foundation is now stable. The next phase will focus on **detection engineeri
 ### Planned Activities
 
 - **Complete agent deployment**  
-  Ensure all endpoints (including the Ubuntu jumpbox) have Wazuh agents installed and reporting.
+  Ensure all endpoints have Wazuh agents installed and reporting.
 
 - **Centralize all logs into Security Onion**  
   Configure Security Onion to ingest Wazuh alerts (via Elastic integration) and firewall logs from IPFire (syslog).
