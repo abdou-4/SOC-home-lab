@@ -8,7 +8,7 @@
 ## 📖 Table of Contents
 
 - [Overview](#overview)
-- [Phase 1 – Foundation (Completed)](#phase-1--foundation)
+- [Phase 1 – Foundation](#phase-1--foundation)
   - [Architecture & Network Segmentation](#architecture--network-segmentation)
   - [VM Components & Resource Constraints](#vm-components--resource-constraints)
   - [Network Zones & IP Assignment](#network-zones--ip-assignment)
@@ -112,15 +112,16 @@ During the build, several typical enterprise‑grade issues were encountered and
 | Challenge                                         | Solution                                                                                     |
 |---------------------------------------------------|----------------------------------------------------------------------------------------------|
 | The external HDD change name depending on the I/O port & Virtualbox not lunching VMs due to KVM issue  | Wrote a bash file `/starter` that mount the HDD using the UUID and turn off intel KVM|
-| Ubuntu netplan configuration lost after install in all VMs   | Manually wrote `/etc/netplan/50-cloud-init.yaml` with static IP, gateway, and nameservers.      |
+| Ubuntu netplan configuration lost after install in all VMs & wazuh OVA was set to DHCP  | Manually wrote `/etc/netplan/50-cloud-init.yaml` for ubuntu VMs and navigate to `/etc/systemd/network` for wazuh with static IP, gateway, and nameservers.      |
 | BLUE zones had no internet access          | Added all the blue MAC addresses in IPFire: **Access to Blue** |
 | Wazuh manual installation repeatedly failed       | Switched to the official Wazuh OVA (pre‑configured).                                         |
 | Parrot OS live environment hung on boot           | remove the ISO file from the VM storage.                                              |
 | DNS resolution broken on Ubuntu                   | Set `/etc/resolv.conf` manually and disabled systemd‑resolved.                               |
 | Systemd service timeouts                          | Increased `DefaultTimeoutStartSec=600` in `/etc/systemd/system.conf`.                        |
 
-- [starter bash script](/starter)
-- [netplan config file](/50-cloud-init.yaml)
+- [starter bash script (external HDD mount and turn off KVM)](/starter)
+- [netplan config file(static IPV4 for ubuntu server)](/50-cloud-init.yaml)
+- [wazuh network config(static IPV4 for wazuh OVA)](/05-static-eth0.network)
 
 ---
 
