@@ -108,7 +108,7 @@ All other VMs have a single adapter attached to their respective internal networ
 
 ### Firewall Configuration
 
-The following ports are opened to allow communication between internal zones (GREEN: monitoring, BLUE: servers, ORANGE: users) and to enable monitoring tools. A screenshot of the actual firewall rules is included in the repository.
+To maintain a hardened environment, only the absolutely necessary ports are opened between zones. Every allowed service is explicitly justified; all other traffic is denied by default. This minimizes the attack surface and ensures that monitoring tools function without exposing unnecessary services.
 
 | Port | Protocol | Purpose |
 |------|----------|---------|
