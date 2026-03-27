@@ -14,6 +14,7 @@
   - [Network Zones & IP Assignment](#network-zones--ip-assignment)
   - [VirtualBox Network Configuration](#virtualbox-network-configuration)
   - [Initial Setup & Challenges](#initial-setup--challenges)
+  - [Firewall Configuration](#Firewall-Configuration)
 - [Phase 2 – Operations (Planned)](#phase-2--operations-planned)
 - [How to Replicate](#how-to-replicate)
 - [Lessons Learned](#lessons-learned)
@@ -31,7 +32,7 @@ The lab emulates a small enterprise with:
 - **Network Detection & Response (NDR)** (Security Onion)  
 - **Endpoint Detection & Response (EDR)** (Wazuh)  
 - **Centralized logging & alerting**  
-- **A dedicated management workstation** (jumpbox)  
+- **A dedicated management workstation**  
 - **Simulated users, servers, and an attacker**
 
 The lab is divided into two phases to ensure a solid foundation before adding detection engineering and automation.
@@ -71,7 +72,7 @@ Because of limited resources, VMs are not always running simultaneously; a selec
 | **Windows 10 LTSC**      | End‑user workstation                      | 2    | 2        | 40           | ORANGE    | 192.168.20.2 |
 | **Parrot OS**            | Attacker (external)                       | 2    | 4        | 40           | RED       | (DHCP)       |
 
-> **Note:** All internal VMs use static IPs; the management workstation acts as the only way to access monitoring dashboards (no direct internet access for servers), used RAM could be decrease only after installation 
+> **Note:** All internal VMs use static IPs; the management workstation acts as the only way to access monitoring dashboards, the RAM could be decrease only after installation 
 
 ### Network Zones & IP Assignment
 
@@ -104,6 +105,28 @@ In addition to its management interface on GREEN, Security Onion has a **second 
 | 2       | Internal Network   | `zone-server`     | None (monitor‑only) | **Allow All**    |
 
 All other VMs have a single adapter attached to their respective internal network.
+
+### Firewall Configuration
+
+The following ports are opened to allow communication between internal zones (GREEN: monitoring, BLUE: servers, ORANGE: users) and to enable monitoring tools. A screenshot of the actual firewall rules is included in the repository.
+
+| Port | Protocol | Purpose |
+|------|----------|---------|
+| 1514 | TCP | Wazuh agent event traffic |
+| 1515 | TCP | Wazuh agent registration |
+| 8220 | TCP | Elastic Agent enrollment (Security Onion Fleet) |
+| 8443 | TCP | Elastic Agent management (Fleet Server internal) |
+| 5055 | TCP | Logstash data pipeline (Elastic Agent) |
+| 443 | TCP | Security Onion web interface (analyst access) |
+| 22 | TCP | SSH access (optional) |
+| – | ICMP | Ping between GREEN and BLUE/ORANGE for connectivity tests |
+
+
+> **Note:**
+- **Access to Blue** is enabled for specific server IPs to allow internet access (BLUE → RED).
+- All internal zones (GREEN, BLUE, ORANGE) can reach the internet by default (outbound).
+- Incoming traffic from RED (attacker network) is blocked by default.
+- Firewall rules are placed **above** default deny policies to ensure they take precedence.
 
 ### Initial Setup & Challenges
 
