@@ -1,7 +1,8 @@
 # 🛡️ SOC Engineering Lab – Phased Implementation
 
 > A virtual Security Operations Center (SOC) lab that simulates a real‑world enterprise environment.  
-> Built to practice network segmentation, threat detection, alert triage, and incident response using industry‑standard open‑source tools.  
+> Built to practice network segmentation, threat detection, alert triage, and incident response using industry‑standard open‑source tools.
+> Skills demonstrated: Security architecture design, firewall policy enforcement, SIEM/EDR deployment, network monitoring, and automation – all on constrained hardware.
 
 ---
 
@@ -14,6 +15,7 @@
   - [Network Zones & IP Assignment](#network-zones--ip-assignment)
   - [VirtualBox Network Configuration](#virtualbox-network-configuration)
   - [Firewall Configuration](#Firewall-Configuration)
+  - [Agents Deployment](#Agents-Deployment)
   - [Initial Setup & Challenges](#initial-setup--challenges)
 - [Phase 2 – Operations (Planned)](#phase-2--operations-planned)
 - [How to Replicate](#how-to-replicate)
@@ -130,6 +132,17 @@ To maintain a hardened environment, only the absolutely necessary ports are open
 
 ![Alt text](ScreenShots/ipfire_rules.png?raw=true "screenshot of the firewall rules (ipfire)")
 
+### Agents Deployment
+
+Agents were deployed on all endpoint VMs (Windows Server 2019, Ubuntu Server, Windows 10 LTSC) to enable centralized monitoring:
+
+- **Wazuh agents** installed on each endpoint, configured to communicate with the Wazuh manager at `192.168.30.3` (port 1514/1515). Agents were registered and started.
+- **Security Onion Elastic Agents** installed on each endpoint, automatically enrolling with the Fleet Server at `192.168.30.2:8220` using the official MSI and Linux installer.
+- To reach the Security Onion web interface was from the management VM i need to  change it's firewall rules using the command `sudo so-firewall includehost analyst 192.168.30.4` then `sudo so-firewall apply` to apply the changes
+- Required firewall rules (ports 1514, 1515, 8220, 8443, 5055) were already opened in IPFire between the server zone (BLUE) and monitoring zone (GREEN).
+
+All endpoints now forward logs and telemetry to both monitoring platforms.
+
 ### Initial Setup & Challenges
 
 During the build, several typical enterprise‑grade issues were encountered and resolved:
@@ -143,6 +156,7 @@ During the build, several typical enterprise‑grade issues were encountered and
 | Parrot OS live environment hung on boot           | remove the ISO file from the VM storage.                                              |
 | DNS resolution broken on Ubuntu                   | Set `/etc/resolv.conf` manually and disabled systemd‑resolved.                               |
 | Systemd service timeouts                          | Increased `DefaultTimeoutStartSec=600` in `/etc/systemd/system.conf`.                        |
+| Security onion command sudo `so-firewall apply` repeatedly timed out due to Salt (the configuration management engine) being stuck | Restart it `sudo systemctl restart salt-master salt-minion` |
 
 - [starter bash script (external HDD mount and turn off KVM)](/starter)
 - [netplan config file(static IPV4 for ubuntu server)](/50-cloud-init.yaml)
@@ -150,9 +164,9 @@ During the build, several typical enterprise‑grade issues were encountered and
 
 ---
 
-## Phase 2 – Operations (Planned)
+## Phase 2 – Operations
 
-The foundation is now stable. The next phase will focus on **detection engineering, automation, and incident response**.
+With the infrastructure stable, Phase 2 transforms the lab into a fully functional SOC. The focus shifts to **detection engineering, automation, and realistic incident response**.
 
 ### Planned Activities
 
