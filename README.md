@@ -166,41 +166,7 @@ During the build, several typical enterprise‑grade issues were encountered and
 
 ## Phase 2 – Operations
 
-With the infrastructure stable, Phase 2 transforms the lab into a fully functional SOC. The focus shifts to **detection engineering, automation, and realistic incident response**.
 
-### Planned Activities
-
-- **Complete agent deployment**  
-  Ensure all endpoints have Wazuh agents installed and reporting.
-
-- **Centralize all logs into Security Onion**  
-  Configure Security Onion to ingest Wazuh alerts (via Elastic integration) and firewall logs from IPFire (syslog).
-
-- **Detection engineering**  
-  Write custom detection rules (Sigma / Elastic) mapped to MITRE ATT&CK, e.g.:
-  - Privileged group changes
-  - LSASS credential dumping
-  - PowerShell obfuscation patterns
-
-- **Normal traffic generation**  
-  Use scripts or tools like LogGen to simulate benign user activity, reducing alert fatigue and creating realistic noise.
-
-- **Adversary simulation**  
-  Run Atomic Red Team or Caldera on victim machines to validate detection coverage.
-
-- **SOAR automation**  
-  Deploy **n8n** (or Shuffle) to create playbooks:
-  - **Phishing email analysis** – automatically scan links/attachments with VirusTotal, URLScan, and a local AI model.
-  - **Automated IP blocking** – when Suricata detects a known malicious C2 domain, n8n adds a firewall rule on IPFire.
-
-- **Incident response documentation**  
-  Simulate a ransomware attack, document the full investigation timeline, and produce a post‑mortem report.
-
-- **Enhance dashboards**  
-  Create Kibana dashboards showing:
-  - Top triggered alerts
-  - MITRE ATT&CK tactic breakdown
-  - Geomap of incoming attacks (from firewall logs)
 
 ---
 
