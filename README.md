@@ -128,6 +128,8 @@ To maintain a hardened environment, only the absolutely necessary ports are open
 - Incoming traffic from RED (attacker network) is blocked by default.
 - Firewall rules are placed **above** default deny policies to ensure they take precedence.
 
+![Alt text](/main/ScreenShots/ipfire_rules.jpg?raw=true "screenshot of the firewall rules (ipfire)")
+
 ### Initial Setup & Challenges
 
 During the build, several typical enterprise‑grade issues were encountered and resolved:
