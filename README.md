@@ -69,7 +69,7 @@ Because of limited resources, VMs are not always running simultaneously; a selec
 | **Security Onion**       | NDR (network monitoring)                  | 4    | 8        | 200          | GREEN     | 192.168.30.2 |
 | **Wazuh OVA**            | EDR / SIEM                                | 4    | 8        | 50           | GREEN     | 192.168.30.3 |
 | **Ubuntu Desktop (GUI)** | Management workstation                    | 2    | 4        | 25           | GREEN     | 192.168.30.4 |
-| **Windows Server 2019**  | Victim server (AD)                        | 2    | 2        | 40           | BLUE      | 192.168.10.2 |
+| **Windows Server 2019**  | Victim server (DC,AD)                        | 2    | 2        | 40           | BLUE      | 192.168.10.2 |
 | **Ubuntu Server**        | Victim Linux server                       | 1    | 2        | 25           | BLUE      | 192.168.10.3 |
 | **Windows 10 LTSC**      | End‑user workstation                      | 2    | 2        | 40           | ORANGE    | 192.168.20.2 |
 | **Parrot OS**            | Attacker (external)                       | 2    | 4        | 40           | RED       | (DHCP)       |
