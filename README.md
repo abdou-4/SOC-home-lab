@@ -8,6 +8,8 @@
 
 ---
 
+![LAB DIAGRAME](images/post.png "Idiagrame-poster for the project")
+
 ## 📖 Table of Contents
 
 - [Overview](#overview)
